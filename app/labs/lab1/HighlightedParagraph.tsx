@@ -46,6 +46,23 @@ export default function HighlightedParagraphLab() {
         borderWidth="3px"
         borderRadius="0px"
       />
+
+      <HighlightedParagraph
+        text="Hi, I am Long, I love anime/manga/photographer, and I love playing soccer"
+        backgroundColor="#f0f8ff"
+        borderColor="#4682b4"
+        borderWidth={3}
+        borderRadius={26}
+      />
+
+      <HighlightedParagraph
+        text="Props let the same component render with different colors."
+        backgroundColor="lavender"
+        borderColor="purple"
+        borderWidth={3}
+        borderRadius={12}
+      />
+
     </div>
   );
 }
