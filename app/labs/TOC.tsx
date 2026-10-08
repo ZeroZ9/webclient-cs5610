@@ -6,13 +6,19 @@ export default function TOC() {
       <h2>Labs</h2>
       <ul>
         <li>
-        <Link href="/labs" id="wd-home-link">Home</Link>
+          <Link href="/labs" id="wd-home-link">
+            Home
+          </Link>
         </li>
         <li>
-          <Link href="/labs/lab1" id="wd-lab1-link">Lab 1</Link>
+          <Link href="/labs/lab1" id="wd-lab1-link">
+            Lab 1
+          </Link>
         </li>
         <li>
-          <Link href="/labs/lab2" id="wd-lab2-link">Lab 2</Link>
+          <Link href="/labs/lab2" id="wd-lab2-link">
+            Lab 2
+          </Link>
         </li>
         <li>
           <Link href="/labs/lab3">Lab 3</Link>
@@ -24,15 +30,32 @@ export default function TOC() {
           <Link href="/labs/lab5">Lab 5</Link>
         </li>
         <li>
-          <Link href="/book/ch1" id="wd-toc-book-link">Chapter 1</Link>
+          <Link href="/book/ch1" id="wd-toc-book-link">
+            Chapter 1
+          </Link>
         </li>
         <li>
-            <a href="https://webdev-client.vercel.app/book/ch1#sec-1-3-11" target="_blank">Back to Book</a>
+          <a
+            href="https://webdev-client.vercel.app/book/ch1#sec-1-3-11"
+            target="_blank"
+          >
+            Back to Book
+          </a>
         </li>
         <li>
-            <Link href="/" id="wd-kambaz-link">
-              Kambaz
-            </Link>
+          <Link href="/" id="wd-kambaz-link">
+            Kambaz
+          </Link>
+        </li>
+        <li>
+          <a
+            href="https://github.com/ZeroZ9/webclient-cs5610"
+            id="wd-github"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub repository
+          </a>
         </li>
       </ul>
     </div>
