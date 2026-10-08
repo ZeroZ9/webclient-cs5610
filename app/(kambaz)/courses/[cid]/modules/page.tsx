@@ -78,7 +78,6 @@
 //   );
 // }
 
-
 import Lesson from "./Lesson";
 import Module from "./Module";
 
@@ -121,7 +120,37 @@ export default function Modules() {
             <li className="wd-content-item">
               Full Stack Developer - Chapter 1 - Introduction
             </li>
+            <li className="wd-content-item">
+              Full Stack Developer - Chapter 2 - Creating User Interfaces
+            </li>
           </Lesson>
+          <Lesson title="SLIDES">
+            <li className="wd-content-item">Introduction to Web Development</li>
+            <li className="wd-content-item">
+              Creating an HTTP server with Node.js
+            </li>
+            <li className="wd-content-item">Creating a React Application</li>
+          </Lesson>
+        </Module>
+        <Module title="Week 2">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Learn how to dance</li>
+          </Lesson>
+        </Module>
+        <Module title="Week 3">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Learn how to draw</li>
+          </Lesson>
+        </Module>
+
+        <Module title="Gym Week">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Its Leg day</li>
+          </Lesson>
+        </Module>
+
+        <Module title="Sample module (AI)">
+          <Lesson title="Sample lesson (AI)" />
         </Module>
       </ul>
     </div>
