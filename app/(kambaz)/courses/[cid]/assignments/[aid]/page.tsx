@@ -130,8 +130,15 @@
 
 import Link from "next/link";
 import { FaChevronDown } from "react-icons/fa";
+import * as db from "../../../../database";
 
-export default function AssignmentEditor() {
+export default async function AssignmentEditor({
+  params,
+}: {
+  params: Promise<{ cid: string; aid: string }>;
+}) {
+  const { cid, aid } = await params;
+  const assignment = db.assignments.find((a) => a._id === aid);
   return (
     <div id="wd-assignments-editor">
       <label className="block" htmlFor="wd-name">
@@ -140,17 +147,15 @@ export default function AssignmentEditor() {
       <input
         className="p-2 w-full md:w-[500px]"
         id="wd-name"
-        defaultValue="A1 - ENV + HTML"
+        defaultValue={assignment?.title ?? ""}
       />
       <br />
       <br />
       <textarea
         className="mt-1 w-full h-[300px] md:w-[500px]"
         id="wd-description"
-      >
-        The assignment is available online Submit a link to the landing page of
-        your Web application running on Vercel.
-      </textarea>
+        defaultValue={assignment?.description ?? ""}
+      />
       <br />
       <table className="pl-5 mt-3.5 [&_td]:py-2">
         <tbody>
@@ -159,7 +164,11 @@ export default function AssignmentEditor() {
               <label htmlFor="wd-points">Points</label>
             </td>
             <td>
-              <input className="ml-2" id="wd-points" defaultValue={100} />
+              <input
+                className="ml-2"
+                id="wd-points"
+                defaultValue={assignment?.points ?? 100}
+              />
             </td>
           </tr>
           <tr>
@@ -295,7 +304,7 @@ export default function AssignmentEditor() {
                   className="border border-neutral-400 rounded p-2 appearance-none"
                   type="date"
                   id="wd-due-date"
-                  defaultValue="2024-05-13"
+                  defaultValue={assignment?.due}
                 />
                 <br />
 
@@ -309,7 +318,7 @@ export default function AssignmentEditor() {
                       className="border border-neutral-400 rounded p-2 appearance-none"
                       type="date"
                       id="wd-available-from"
-                      defaultValue="2024-05-06"
+                      defaultValue={assignment?.available}
                     />{" "}
                   </div>
 
@@ -322,7 +331,7 @@ export default function AssignmentEditor() {
                       className="border border-neutral-400 rounded p-2 appearance-none" 
                       type="date"
                       id="wd-available-until"
-                      defaultValue="2024-05-13"
+                      defaultValue={assignment?.due}
                     />
                   </div>
                 </div>
@@ -341,14 +350,14 @@ export default function AssignmentEditor() {
       <hr />
       <div className="mt-4 flex gap-2">
         <Link
-          href="/courses/1234/assignments"
+          href={`/courses/${cid}/assignments`}
           id="wd-cancel"
           className="inline-block rounded border border-neutral-400 bg-neutral-200 px-4 py-2 text-gray-700 no-underline hover:bg-neutral-300"
         >
           Cancel
         </Link>
         <Link
-          href="/courses/1234/assignments"
+          href={`/courses/${cid}/assignments`}
           id="wd-save"
           className="inline-block rounded bg-red-600 px-4 py-2 text-white no-underline hover:bg-red-700"
         >
