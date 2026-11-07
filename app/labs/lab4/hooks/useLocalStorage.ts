@@ -14,4 +14,4 @@ export default function useLocalStorage<T>(key: string, initial: T) {
     window.localStorage.setItem(key, JSON.stringify(next));
   };
   return [value, save] as const;
-}
+}   

@@ -42,17 +42,49 @@
 //   );
 // }
 
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
-import * as db from "../../../database";
+import {
+  useAssignmentsStore,
+  type Assignment,
+} from "../../../store/assignmentsStore";
 
-export default async function Assignments({
-  params,
-}: {
-  params: Promise<{ cid: string }>;
-}) {
-  const { cid } = await params;
-  const assignments = db.assignments.filter(
+// "2024-05-13" -> "May 13"
+const formatDate = (date: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+
+// Today as "YYYY-MM-DD" in local time, so it compares directly with the JSON dates
+const today = () => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
+// Before available: when it opens. While open: when it closes. After: closed.
+const availability = (assignment: Assignment) => {
+  const until = assignment.until || assignment.due;
+  const now = today();
+  if (assignment.available && now < assignment.available) {
+    return `Not available until ${formatDate(assignment.available)} at 12:00am`;
+  }
+  if (!until) return "";
+  if (now <= until) return `Available until ${formatDate(until)} at 11:59pm`;
+  return "Closed";
+};
+
+export default function Assignments() {
+  const { cid } = useParams<{ cid: string }>();
+  const router = useRouter();
+  const allAssignments = useAssignmentsStore((state) => state.assignments);
+  const assignments = allAssignments.filter(
     (assignment) => assignment.course === cid,
   );
   return (
@@ -78,6 +110,9 @@ export default async function Assignments({
             id="wd-add-assignment"
             type="button"
             className="inline-flex items-center gap-1 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+            onClick={() =>
+              router.push(`/courses/${cid}/assignments/${crypto.randomUUID()}`)
+            }
           >
             <FaPlus /> Assignment
           </button>
@@ -102,7 +137,14 @@ export default async function Assignments({
             cid={cid}
             aid={assignment._id}
             title={assignment.title}
-            details={`Multiple Modules | Not available until ${assignment.available} | Due ${assignment.due} | ${assignment.points} pts`}
+            details={[
+              "Multiple Modules",
+              availability(assignment),
+              assignment.due && `Due ${formatDate(assignment.due)} at 11:59pm`,
+              `${assignment.points} pts`,
+            ]
+              .filter(Boolean)
+              .join(" | ")}
           />
         ))}
       </ul>

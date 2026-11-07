@@ -128,17 +128,57 @@
 //   );
 // }
 
-import Link from "next/link";
-import { FaChevronDown } from "react-icons/fa";
-import * as db from "../../../../database";
+  // _id: string;
+  // title: string;
+  // course: string;
+  // description: string;
+  // points: number;
+  // due: string;
+  // available: string;
 
-export default async function AssignmentEditor({
-  params,
-}: {
-  params: Promise<{ cid: string; aid: string }>;
-}) {
-  const { cid, aid } = await params;
-  const assignment = db.assignments.find((a) => a._id === aid);
+"use client";
+
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+// import { FaChevronDown } from "react-icons/fa";
+import {
+  useAssignmentsStore,
+  type Assignment,
+} from "../../../../store/assignmentsStore";
+
+export default function AssignmentEditor() {
+  const { cid, aid } = useParams<{ cid: string; aid: string }>();
+  const router = useRouter();
+  const findAssignment = useAssignmentsStore((state) => state.findAssignment);
+  const addAssignment = useAssignmentsStore((state) => state.addAssignment);
+  const updateAssignment = useAssignmentsStore(
+    (state) => state.updateAssignment,
+  );
+  const found = findAssignment(aid);
+  const existing = found?.course === cid ? found : undefined;
+  const [form, setForm] = useState<Assignment>(
+    existing ?? {
+      _id: aid,
+      title: "New Assignment",
+      course: cid,
+      description: "",
+      points: 100,
+      due: "",
+      available: "",
+    },
+  );
+
+  const save = () => {
+    if (existing) {
+      updateAssignment({ ...form, course: cid });
+    } else {
+      // A new id, in case aid already belongs to another course's assignment
+      addAssignment({ ...form, course: cid, _id: found ? undefined : aid });
+    }
+    router.push(`/courses/${cid}/assignments`);
+  };
+
   return (
     <div id="wd-assignments-editor">
       <label className="block" htmlFor="wd-name">
@@ -147,14 +187,16 @@ export default async function AssignmentEditor({
       <input
         className="p-2 w-full md:w-[500px]"
         id="wd-name"
-        defaultValue={assignment?.title ?? ""}
+        value={form.title}
+        onChange={(e) => setForm({ ...form, title: e.target.value })}
       />
       <br />
       <br />
       <textarea
         className="mt-1 w-full h-[300px] md:w-[500px]"
         id="wd-description"
-        defaultValue={assignment?.description ?? ""}
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
       <br />
       <table className="pl-5 mt-3.5 [&_td]:py-2">
@@ -167,10 +209,15 @@ export default async function AssignmentEditor({
               <input
                 className="ml-2"
                 id="wd-points"
-                defaultValue={assignment?.points ?? 100}
+                type="number"
+                value={form.points}
+                onChange={(e) =>
+                  setForm({ ...form, points: Number(e.target.value) })
+                }
               />
             </td>
           </tr>
+          {/*
           <tr>
             <td align="right" valign="top">
               <label htmlFor="wd-group">Assignment Group</label>
@@ -276,6 +323,7 @@ export default async function AssignmentEditor({
               </div>
             </td>
           </tr>
+          */}
 
           <tr>
             <td align="right" valign="top">
@@ -283,6 +331,7 @@ export default async function AssignmentEditor({
             </td>
             <td>
               <div className="border border-neutral-400 p-2 ml-2 rounded">
+                {/*
                 <label className="font-bold" htmlFor="wd-assign-to">
                   Assign to
                 </label>
@@ -296,6 +345,7 @@ export default async function AssignmentEditor({
                   <FaChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-neutral-500" />
                 </div>
                 <br />
+                */}
                 <label className="font-bold" htmlFor="wd-due-date">
                   Due Date
                 </label>
@@ -304,7 +354,8 @@ export default async function AssignmentEditor({
                   className="border border-neutral-400 rounded p-2 appearance-none"
                   type="date"
                   id="wd-due-date"
-                  defaultValue={assignment?.due}
+                  value={form.due}
+                  onChange={(e) => setForm({ ...form, due: e.target.value })}
                 />
                 <br />
 
@@ -318,7 +369,10 @@ export default async function AssignmentEditor({
                       className="border border-neutral-400 rounded p-2 appearance-none"
                       type="date"
                       id="wd-available-from"
-                      defaultValue={assignment?.available}
+                      value={form.available}
+                      onChange={(e) =>
+                        setForm({ ...form, available: e.target.value })
+                      }
                     />{" "}
                   </div>
 
@@ -328,10 +382,13 @@ export default async function AssignmentEditor({
                     </label>
                     <br />
                     <input
-                      className="border border-neutral-400 rounded p-2 appearance-none" 
+                      className="border border-neutral-400 rounded p-2 appearance-none"
                       type="date"
                       id="wd-available-until"
-                      defaultValue={assignment?.due}
+                      value={form.until ?? form.due}
+                      onChange={(e) =>
+                        setForm({ ...form, until: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -340,6 +397,7 @@ export default async function AssignmentEditor({
           </tr>
         </tbody>
       </table>
+      {/*
       <label className="block" htmlFor="wd-ai-editor-notes">
         Sample notes
       </label>
@@ -347,6 +405,7 @@ export default async function AssignmentEditor({
         className="mt-1 w-full h-[120px] md:w-[500px]"
         id="wd-ai-editor-notes"
       />
+      */}
       <hr />
       <div className="mt-4 flex gap-2">
         <Link
@@ -356,13 +415,14 @@ export default async function AssignmentEditor({
         >
           Cancel
         </Link>
-        <Link
-          href={`/courses/${cid}/assignments`}
+        <button
+          type="button"
           id="wd-save"
-          className="inline-block rounded bg-red-600 px-4 py-2 text-white no-underline hover:bg-red-700"
+          onClick={save}
+          className="inline-block rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
         >
           Save
-        </Link>
+        </button>
       </div>
     </div>
   );
