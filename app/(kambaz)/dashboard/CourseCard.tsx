@@ -31,8 +31,7 @@ export default function CourseCard({
   return (
     <div className="wd-dashboard-course w-[300px] max-w-full overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
       <Link
-        // visitors can only open Modules (see courses/[cid]/layout.tsx)
-        href={`/courses/${course._id}/${currentUser ? "home" : "modules"}`}
+        href={`/courses/${course._id}/home`}
         className="wd-dashboard-course-link block text-neutral-900 no-underline"
       >
         <Image
