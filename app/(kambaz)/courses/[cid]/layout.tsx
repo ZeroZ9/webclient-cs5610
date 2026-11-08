@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
@@ -22,17 +22,22 @@ export default function CoursesLayout({
   const { currentUser } = useAccountContext();
   const enrollments = useEnrollmentsStore((state) => state.enrollments);
   const router = useRouter();
+  const pathname = usePathname();
   const enrolled =
     currentUser !== null &&
     enrollments.some(
       (e) => e.user === currentUser._id && e.course === courseId,
     );
+  // Signed-out visitors may browse a course's Modules page, nothing else
+  const guestOnModules =
+    currentUser === null && pathname === `/courses/${courseId}/modules`;
+  const canView = enrolled || guestOnModules;
 
   useEffect(() => {
-    if (!enrolled) router.push("/dashboard");
-  }, [enrolled, router]);
+    if (!canView) router.push("/dashboard");
+  }, [canView, router]);
 
-  if (!enrolled) return null;
+  if (!canView) return null;
 
   return (
     <div id="wd-courses">
