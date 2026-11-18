@@ -28,7 +28,7 @@ export default function CoursesLayout({
     enrollments.some(
       (e) => e.user === currentUser._id && e.course === courseId,
     );
-  // Signed-out visitors may browse a course's Modules page, nothing else
+  //visitors may browse a course's Modules page, nothing else
   const guestOnModules =
     currentUser === null && pathname === `/courses/${courseId}/modules`;
   const canView = enrolled || guestOnModules;
