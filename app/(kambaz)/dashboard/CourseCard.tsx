@@ -3,6 +3,7 @@ import Image from "next/image";
 import { type Course } from "../store/coursesStore";
 import { useEnrollmentsStore } from "../store/enrollmentsStore";
 import { useAccountContext } from "../account/AccountContext";
+import * as client from "../courses/client";
 
 export default function CourseCard({
   course,
@@ -21,11 +22,13 @@ export default function CourseCard({
       )
     : null;
 
-  const toggleEnrollment = () => {
+  const toggleEnrollment = async () => {
     if (!currentUser) return;
     if (enrolled) {
+      await client.unenrollFromCourse(course._id);
       unenroll(currentUser._id, course._id);
     } else {
+      await client.enrollIntoCourse(course._id);
       enroll(currentUser._id, course._id);
     }
   };

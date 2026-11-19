@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import * as db from "../../database";
 import { useAccountContext } from "../AccountContext";
 import * as client from "../client";
+import * as coursesClient from "../../courses/client";
+import { useEnrollmentsStore } from "../../store/enrollmentsStore";
 
 export default function Signin() {
   const [credentials, setCredentials] = useState({
@@ -13,12 +15,14 @@ export default function Signin() {
     password: "",
   });
   const { setCurrentUser } = useAccountContext();
+  const setEnrollments = useEnrollmentsStore((state) => state.setEnrollments);
   const router = useRouter();
 
   const signin = async () => {
     const user = await client.signin(credentials);
     if (!user) return;
     setCurrentUser(user);
+    setEnrollments(await coursesClient.findMyEnrollments());
     router.push("/dashboard");
   };
 

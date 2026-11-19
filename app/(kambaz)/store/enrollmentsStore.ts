@@ -1,7 +1,6 @@
 "use client";
 
 import {create} from "zustand";
-import enrollmentsJson from "../database/enrollments.json";
 
 export type Enrollment = {
   _id: string;
@@ -13,10 +12,12 @@ export type EnrollmentsStore = {
     enrollments: Enrollment[];
    enroll: (userId: string, courseId: string) => void;
     unenroll: (userId: string, courseId: string) => void;
+    setEnrollments: (enrollments: Enrollment[]) => void;
 };
 
 export const useEnrollmentsStore = create<EnrollmentsStore>((set) => ({
-    enrollments: enrollmentsJson as Enrollment[],
+    // Starts empty; filled from the server after sign-in (see Session.tsx and signin)
+    enrollments: [],
     enroll: (userId, courseId) =>
         set((state) => ({
             enrollments: [
@@ -28,6 +29,7 @@ export const useEnrollmentsStore = create<EnrollmentsStore>((set) => ({
                 },
             ],
         })),
+    setEnrollments: (enrollments) => set({ enrollments }),
     unenroll: (userId, courseId) =>
         set((state) => ({
             enrollments: state.enrollments.filter(

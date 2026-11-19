@@ -8,7 +8,6 @@ import {
   type Course,
 } from "../store/coursesStore";
 import { useAccountContext } from "../account/AccountContext";
-import { useEnrollmentsStore } from "../store/enrollmentsStore";
 
 import * as client from "../courses/client";
 
@@ -21,17 +20,6 @@ export default function Dashboard() {
   const [course, setCourse] = useState<Course>(emptyCourse);
   const [showAllcourses, setShowAllCourses] = useState(false);
   const { currentUser } = useAccountContext();
-  const enrollments = useEnrollmentsStore((state) => state.enrollments);
-  const enroll = useEnrollmentsStore((state) => state.enroll);
-
-  const visibleCourses =
-    showAllcourses || !currentUser
-      ? courses
-      : courses.filter((c) =>
-          enrollments.some(
-            (e) => e.user === currentUser._id && e.course === c._id,
-          ),
-        );
 
   const onAddCourse = async () => {
     const newCourse = await client.createCourse(course);
@@ -49,11 +37,16 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    // Enrollments toggle on: every course. Off: only the courses I'm enrolled in.
     const load = async () => {
-      setCourses(await client.findMyCourses());
+      setCourses(
+        showAllcourses
+          ? await client.fetchAllCourses()
+          : await client.findMyCourses(),
+      );
     };
     load();
-  }, [currentUser]);
+  }, [currentUser, showAllcourses]);
 
   return (
     <div id="wd-dashboard">
@@ -119,7 +112,7 @@ export default function Dashboard() {
       />
       <hr />
       <h2 id="wd-dashboard-published">
-        Published Courses ({visibleCourses.length})
+        Published Courses ({courses.length})
       </h2>
       <hr />
       <div
