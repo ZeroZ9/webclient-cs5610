@@ -26,17 +26,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FaFileAlt, FaTrash as Trash } from "react-icons/fa";
-import {useAssignmentsStore} from "../../../store/assignmentsStore";
 
 export default function AssignmentItem({
-  cid, aid, title, details,
+  cid, aid, title, details, onDelete,
 }: {
   cid: string;
   aid: string;
   title: string;
   details: string;
+  onDelete: (assignmentId: string) => void;
 }) {
-  const deleteAssignment = useAssignmentsStore((state) => state.deleteAssignment);
   const [showConfirm, setShowConfirm] = useState(false);
   return (
     <li className="wd-assignment-list-item mb-3 flex gap-3 border border-neutral-300 border-l-[3px] border-l-green-600 bg-white p-3">
@@ -83,7 +82,7 @@ export default function AssignmentItem({
               <button
                 type="button"
                 onClick={() => {
-                  deleteAssignment(aid);
+                  onDelete(aid);
                   setShowConfirm(false);
                 }}
                 className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"

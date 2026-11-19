@@ -51,6 +51,8 @@ import {
   useAssignmentsStore,
   type Assignment,
 } from "../../../store/assignmentsStore";
+import * as client from "../../client";
+import { useEffect } from "react";
 
 // "2024-05-13" -> "May 13"
 const formatDate = (date: string) => {
@@ -87,6 +89,24 @@ export default function Assignments() {
   const assignments = allAssignments.filter(
     (assignment) => assignment.course === cid,
   );
+
+  const setAssignments = useAssignmentsStore((state) => state.setAssignments);
+  const deleteAssignment = useAssignmentsStore(
+    (state) => state.deleteAssignment,
+  );
+
+  const onDeleteAssignment = async (assignmentId: string) => {
+    await client.deleteAssignment(assignmentId);
+    deleteAssignment(assignmentId);
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      setAssignments(await client.findAssignmentsForCourse(cid));
+    };
+    load();
+  }, [cid]);
+
   return (
     <div id="wd-assignments">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -145,6 +165,7 @@ export default function Assignments() {
             ]
               .filter(Boolean)
               .join(" | ")}
+            onDelete={onDeleteAssignment}
           />
         ))}
       </ul>

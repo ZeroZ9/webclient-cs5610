@@ -146,6 +146,7 @@ import {
   useAssignmentsStore,
   type Assignment,
 } from "../../../../store/assignmentsStore";
+import * as client from "../../../client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams<{ cid: string; aid: string }>();
@@ -169,12 +170,15 @@ export default function AssignmentEditor() {
     },
   );
 
-  const save = () => {
+  const save = async () => {
+    const assignment: Assignment = { ...form, course: cid };
     if (existing) {
-      updateAssignment({ ...form, course: cid });
+      const saved = await client.updateAssignment(assignment);
+      updateAssignment(saved);
     } else {
-      // A new id, in case aid already belongs to another course's assignment
-      addAssignment({ ...form, course: cid, _id: found ? undefined : aid });
+      // The server gives the new assignment its own _id
+      const created = await client.createAssignmentForCourse(cid, assignment);
+      addAssignment(created);
     }
     router.push(`/courses/${cid}/assignments`);
   };

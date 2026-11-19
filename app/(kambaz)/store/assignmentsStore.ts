@@ -17,11 +17,9 @@ export type Assignment = {
 type AssignmentsStore = {
   assignments: Assignment[];
   addAssignment: (
-    assignment: Partial<Assignment> & {
-      title: string;
-      course: string;
-    },
+    assignment: Assignment,
   ) => void;
+  setAssignments: (assignments: Assignment[]) => void;
   deleteAssignment: (assignmentId: string) => void;
   updateAssignment: (assignment: Assignment) => void;
   findAssignment: (assignmentId: string) => Assignment | undefined;
@@ -31,18 +29,9 @@ export const useAssignmentsStore = create<AssignmentsStore>((set, get) => ({
   assignments: assignmentsJson as Assignment[],
   addAssignment: (assignment) =>
     set((state) => ({
-      assignments: [
-        ...state.assignments,
-        {
-          description: "",
-          points: 100,
-          due: "",
-          available: "",
-          ...assignment,
-          _id: assignment._id ?? crypto.randomUUID(),
-        },
-      ],
+      assignments: [...state.assignments, assignment],
     })),
+  setAssignments: (assignments) => set({ assignments }),
   deleteAssignment: (assignmentId) =>
     set((state) => ({
       assignments: state.assignments.filter((a) => a._id !== assignmentId),
