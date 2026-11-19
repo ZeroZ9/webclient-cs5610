@@ -3,17 +3,23 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccountContext, type User } from "../AccountContext";
+import * as client from "../client";
 
 export default function Profile() {
   const { currentUser, setCurrentUser } = useAccountContext();
   const [profile, setProfile] = useState<User | null>(currentUser);
   const router = useRouter();
 
+  const updateProfile = async () => {
+    const user = await client.updateUser(profile);
+    setCurrentUser(user);
+  };
+
   useEffect(() => {
     if (!currentUser) router.push("/account/signin");
   }, [currentUser, router]);
 
-  const signout = () => { 
+  const signout = () => {
     setCurrentUser(null);
     router.push("/account/signin");
   };

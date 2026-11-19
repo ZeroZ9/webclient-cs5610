@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccountContext } from "../AccountContext";
+import * as client from "../client";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -11,23 +12,11 @@ export default function Signup() {
   const { setCurrentUser } = useAccountContext();
   const router = useRouter();
 
-  const signup = () => {
-    if (!username || !password) return;
-    setCurrentUser({
-      _id: crypto.randomUUID(),
-      username,
-      password,
-      firstName: "",
-      lastName: "",
-      email: "",
-      role: "STUDENT",
-      loginId: "",
-      section: "",
-      lastActivity: "",
-      totalActivity: "",
-    });
-    router.push("/account/profile");
-  };
+  const signup = async () => {
+  const current = await client.signup({ username, password });
+  setCurrentUser(current);
+  router.push("/account/profile");
+};
 
   return (
     <div id="wd-signup-screen">
