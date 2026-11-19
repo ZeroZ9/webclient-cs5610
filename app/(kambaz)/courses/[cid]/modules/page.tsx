@@ -5,13 +5,39 @@ import Module from "./Module";
 import Lesson from "./Lesson";
 import ModulesControls from "./ModulesControls";
 import ModuleControlButtons from "./ModuleControlButtons";
-import { useModulesStore } from "../../../store/modulesStore";
+import {
+  useModulesStore,
+  type CourseModule,
+} from "../../../store/modulesStore";
+import * as client from "../../client";
+import { useEffect } from "react";
 
 export default function Modules() {
-  const { cid } = useParams();
+  const { cid } = useParams<{ cid: string }>();
   const allModules = useModulesStore((state) => state.modules);
   const updateModule = useModulesStore((state) => state.updateModule);
   const modules = allModules.filter((module) => module.course === cid);
+
+  const setModules = useModulesStore((state) => state.setModules);
+  const deleteModule = useModulesStore((state) => state.deleteModule);
+
+  const onRemoveModule = async (moduleId: string) => {
+    await client.deleteModule(moduleId);
+    deleteModule(moduleId);
+  };
+
+  const onUpdateModule = async (module: CourseModule) => {
+    const saved = await client.updateModule(module);
+    updateModule(saved);
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      setModules(await client.findModulesForCourse(cid));
+    };
+    load();
+  }, [cid]);
+
   return (
     <div>
       <ModulesControls />
@@ -30,7 +56,7 @@ export default function Modules() {
                   }
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      updateModule({ ...module, editing: false });
+                      onUpdateModule({ ...module, editing: false });
                     }
                   }}
                 />
@@ -38,7 +64,12 @@ export default function Modules() {
                 module.name
               )
             }
-            controls={<ModuleControlButtons moduleId={module._id} />}
+            controls={
+              <ModuleControlButtons
+                moduleId={module._id}
+                deleteModule={onRemoveModule}
+              />
+            }
           >
             {module.lessons?.map((lesson) => (
               <Lesson key={lesson._id} title={lesson.name} />
