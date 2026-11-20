@@ -51,6 +51,26 @@ export default function TOC() {
           GitHub repository
         </a>
       </li>
+      <li>
+        <a
+          href="https://github.com/ZeroZ9/webdev-server"
+          id="wd-github-server"
+          target="_blank"
+          rel="noreferrer"
+        >
+        Node server repository
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://webdev-server-ogwa.onrender.com/"
+          id="wd-render"
+          target="_blank"
+          rel="noreferrer"
+        >
+        Render root URL
+        </a>
+      </li>
     </ul>
   );
 }
